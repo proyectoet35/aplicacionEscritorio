@@ -20,15 +20,9 @@ import processing.opengl.PGL;
 import processing.opengl.PGraphics3D;
 import processing.opengl.PJOGL;
 
-//Arreglar datos textoMapa
-//Texto del boton Ordenar (flecha abajo, flecha arriba, , a-z)
-
-//--- listo --- Agregar boton para ocultar lista de datos (al lado del boton de ordenar)
-//--- listo --- Boton para la rotacion automatica (rotacion auto ?)
-//--- listo --- Arreglar busqueda y darle un mejor lugar (Hacer la lista menos larga en Y y porner la busqueda abajo de todo)
 //Arreglar letra de la interfaz
 //Definir proporciones del tamaño de la interfaz
-
+//Modo dos mapas
 
 Datos datos;
 Mapa[] mapas = new Mapa[2];
