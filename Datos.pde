@@ -1,4 +1,4 @@
-/*  This file is part of c3d.
+/*  This file is part of C3D.
 
     C3D is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
