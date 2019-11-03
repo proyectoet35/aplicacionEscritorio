@@ -56,8 +56,6 @@ class Datos {
   
   void renovarDatos(int SELECCION) {
     getPoblacion(SELECCION);
-    //getMaximo();
-    //getMinimo();
   }
 
   void crearDatos() {
@@ -78,12 +76,9 @@ class Datos {
   
   void getPoblacion(int SELECCION) {
     for (int i = 1; i < data.length; i++) {
-      //println(data[i][SELECCION]);
       String s = data[i][SELECCION].replace(",", ".");
-      //println(i, s);
       poblacion[i-1] = float(s); 
     }
-    //print(data[1][SELECCION]);
   }
   
   void setMaximo(int seleccion) {

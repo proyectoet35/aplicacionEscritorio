@@ -12,9 +12,10 @@
 
     You should have received a copy of the GNU General Public License
     along with C3D.  If not, see <https://www.gnu.org/licenses/>.  */
-    
+
 //Libreria de interfaz para el usuario
 import controlP5.*;
+import java.util.*;
 
 ControlP5 cp5;
 String busq = "";
@@ -51,7 +52,7 @@ boolean esconderPresionado = false;
 Textarea textoMap1, textoMap2;
 String log = "Datos del censo 2010 y otros documentos de organismos nacionales (mismo año)";
 
-PFont pfont; // use true/false for smooth/no-smooth
+PFont pfont;
 ControlFont font;
 
 void setupGUI() {
@@ -88,16 +89,7 @@ void crearInterfaz() {
     .setSize(70, 30)
     .setLabel("Guardar Mapa")
     ;
-/*
-  pushStyle();
-  //font.setSize(12);
-  ord_datos = cp5.addButton("Ordenar")
-    .setPosition(width-220 + 10, height*0.2 + 5 + 385)
-    .setSize(50, 25)
-    .setLabel("Ordenar")
-    ;
-  popStyle();
-*/
+
   ocultar_datos = cp5.addButton("Ocultar")
     .setPosition(width-220 - 10 + 200 - 50, height*0.2 + 5 + 385)
     .setSize(50, 25)
@@ -271,13 +263,6 @@ void crearDatos() {
 }
 
 void esconderUI() {
-  /*
-  if (textoMap1.isMouseOver()) {
-    ord_datos.show();
-  } else {
-    ord_datos.hide();
-  }
-  */
   rotar_auto.hide();
   lista_datos.close();
   lista_3d.close();
@@ -304,25 +289,10 @@ void mostrarUI() {
   if (cantMapas == 1) {
     guardarMapa.show();
   }
-  /*
-  if (textoMap1.isMouseOver()) {
-    ord_datos.show();
-  } else {
-    ord_datos.hide();
-  }
-  */
-/*
-  if (textoMap1.isMouseOver()) {
-    ord_datos.show();
-  } else {
-    ord_datos.hide();
-  }
-  */
   escondido = false;
 }
 
 void esconder_mostrarUI() {
-  //if (autoHideUI.getArrayValue()[0] == 1) {
   if (esconderPresionado) {
     if (mouseY < 36 || cp5.isMouseOver()) {
       if (!textoMap1.isMouseOver() || !textoMap2.isMouseOver()) {
@@ -417,13 +387,11 @@ void modif_interfaz() {
 }
 
 void crearBusqueda() {
-
   lista_datos.clear();
   crearDatos();
-
 }
 
-void colorearSeleccionado(int op) {
+void colorearSeleccionado(int op) { //No usar
   //Creo los colores
   CColor c = new CColor();
   c.setBackground(color(255, 0, 0));
@@ -506,21 +474,6 @@ void controlEvent(ControlEvent theEvent) {
   } else if (theEvent.isFrom(guardarMapa)) {
     record = true;
   }
-  /*else if (theEvent.isFrom(ord_datos)) {
-    if (ordenLog == "default") {
-      ordenLog = "descendente";
-      //ordenarLog();
-    }
-    else if (ordenLog == "descendente") {
-      ordenLog = "ascendente";
-      //ordenarLog();
-    }
-    else {
-      ordenLog = "default";
-      //ordenarLog();
-    }
-  }
-  */
   else if (theEvent.isFrom(ocultar_datos)) {
     if (!textoMap1.isVisible() && cantMapas == 2) {
       textoMap1.show();
@@ -540,40 +493,50 @@ void controlEvent(ControlEvent theEvent) {
   }
 
   if (theEvent.isAssignableFrom(Textfield.class)) {
-
     busq = theEvent.getStringValue();
     crearBusqueda();
   }
 
   if (theEvent.isController()) {
-    //println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
 
     if (theEvent.getController() == lista_datos) {
-
+  
       int op = int(theEvent.getController().getValue()+1);
-
+      List l = lista_datos.getItems();
+      String s;
+      s = l.get(op-1).toString();
+      String[] m = match(s, "name=(.*?),");
+      for (int i = 0; i < datos.data[0].length; i++) {
+        String opcion = datos.data[0][i];
+        opcion = opcion.toLowerCase();
+        opcion.replace('é', 'e');
+        opcion.replace('í', 'i');
+        opcion.replace('ó', 'o');
+        opcion.replace('ú', 'u');
+        opcion.replace('á', 'a');
+        opcion.replace('ü', 'u');
+        if (m[1].equals(opcion) == true) {
+          op = i;
+          println("encontrado");
+          break;
+        }
+        else {
+          println(m[1] + " ::: " + opcion +".");
+        }
+      }
+      
       if (lista_datos.isActive()) {
         lista_datos.bringToFront();
       }
 
       if (cantMapas == 2) {
-        colorearSeleccionado(op);
         mapas[1].SELECTOR = mapas[0].SELECTOR;
-
-        float[] aux = new float[mapas[0].poblacion.length];
-
-        for (int i = 0; i < mapas[1].poblacion.length; i++) {
-          aux[i] = mapas[1].poblacion[i];
-        }
-        mapas[1].poblacion = mapas[0].poblacion;
         mapas[0].SELECTOR = op;
-
-        //mapas[0].poblacion = mapas[1].poblacion;
 
         log = "";
         for (int j = 0; j < cantMapas; j++) {
           for (int i = 1; i < datos.data.length; i++) {
-            log = log +(datos.data[i][0])+"\t "+(datos.data[i][mapas[j].SELECTOR])+ "\n";
+            log = log +(datos.data[i][0])+": \t\t "+(datos.data[i][mapas[j].SELECTOR])+ "\n";
           }
           if (j == 0) {
             textoMap1.setText(log);
@@ -583,13 +546,12 @@ void controlEvent(ControlEvent theEvent) {
           }
         }
       } else {
-
-        colorearSeleccionado(op);
         mapas[0].SELECTOR = op;
+
         log = "";
 
         for (int i = 1; i < datos.data.length; i++) {
-          log = log +(datos.data[i][0])+"\t "+(datos.data[i][mapas[0].SELECTOR])+ "\n";
+          log = log +(datos.data[i][0])+": \t"+(datos.data[i][mapas[0].SELECTOR])+ "\n";
         }
         textoMap1.setText(log);
       }

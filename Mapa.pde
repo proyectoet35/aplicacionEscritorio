@@ -12,7 +12,7 @@
 
     You should have received a copy of the GNU General Public License
     along with C3D.  If not, see <https://www.gnu.org/licenses/>.  */
-    
+
 class Mapa {
 
   int posCamX, posCamY, dimensionCamX, dimensionCamY;
@@ -21,7 +21,6 @@ class Mapa {
   int SELECTOR = 0;
   color[] colores;
   PShape mapa_svg, map;
-  float[] poblacion;
   PeasyCam cam;
   CameraState estado;
   PApplet p;
@@ -38,7 +37,6 @@ class Mapa {
 
   void renovarDatos() {
     datos.renovarDatos(SELECTOR);
-    //ordenarLog();
   }
 
   void rotar() {
@@ -64,21 +62,36 @@ class Mapa {
 
   void mostrarMaxMin() {
     int valMax = 0, valMin = 0;
-    float max = max(this.poblacion);
-    float min = min(this.poblacion);
+    float[] vals = new float[datos.poblacion.length];
+    for (int i = 0; i < datos.poblacion.length; i++) {
+      String s =datos.data[i+1][SELECTOR].replace(",", ".");
+      vals[i] = float(s);
+    }
+    //printArray(vals);
+    float max = max(vals);
+    float min = min(vals);
     pushStyle();
     textSize(14);
 
-    for (int i = 0; i < this.poblacion.length; i++) {
-      if (this.poblacion[i] == max) {
+    for (int i = 0; i < datos.poblacion.length; i++) {
+      if (vals[i] == max) {
         valMax = i;
-      } else if (this.poblacion[i] == min) {
+      } else if (vals[i] == min) {
         valMin = i;
       }
     }
-    text("Maximo "+datos.provincias[valMax]+": "+max(this.poblacion), posCamX+dimensionCamX * 0.25, height*0.9);
-    text("Minimo "+datos.provincias[valMin]+": "+min(this.poblacion), posCamX+dimensionCamX * 0.75, height*0.9);
-
+    if (valMax + 1 == 23) {
+      text("Maximo "+ "Tierra del Fuego, Antártida.." + ": "+ max, posCamX+dimensionCamX * 0.25, height*0.9);
+      text("Minimo "+datos.data[valMin+1][0]+": "+ min, posCamX+dimensionCamX * 0.75, height*0.9);
+    }
+    else if (valMin + 1 == 23) {
+      text("Maximo "+datos.data[valMax+1][0]+": "+ max, posCamX+dimensionCamX * 0.25, height*0.9);
+      text("Minimo "+ "Tierra del Fuego, Antártida.." + ": "+ min, posCamX+dimensionCamX * 0.75, height*0.9);
+    }
+    else {
+      text("Maximo "+datos.data[valMax+1][0]+": "+ max, posCamX+dimensionCamX * 0.25, height*0.9);
+      text("Minimo "+datos.data[valMin+1][0]+": "+ min, posCamX+dimensionCamX * 0.75, height*0.9);
+    }
     popStyle();
   }
 
@@ -129,28 +142,25 @@ class Mapa {
     datos.setMaximo(selectMaximo);
     datos.setMinimo(selectMinimo);
     addChilds();
-    //printArray(datos.poblacion);
-    //printArray(poblacion);
-    poblacion = datos.poblacion;
   }
 
   void  addChilds() {
-    //println(arg_map.getChildCount());
+     for (int i = 0; i < mapa_svg.getChildCount(); ++i) {
+    PShape state = mapa_svg.getChild(i);
 
-    for (int i = 0; i < mapa_svg.getChildCount(); ++i) {
-      PShape state = mapa_svg.getChild(i);
+    if (i==1) {
+      //Agregar base
+      PShape arg = state.getChild("ARGENTINA");
+      PShape base = connectShapesBase(arg, 10);
+      if (SELECTOR!=0)map.addChild(base);
 
+      for (int j = 0; j < datos.provincias.length; j++) {
 
-      if (i==1) {
-        //Agregar base
-        PShape arg = state.getChild("ARGENTINA");
-        PShape base = connectShapesBase(arg, 10);
-        if (SELECTOR!=0)map.addChild(base);
+        PShape provincia = state.getChild(datos.provincias[j]);
 
-        for (int j = 0; j < datos.provincias.length; j++) {
+        //stroke(0, 20);
 
-          PShape provincia = state.getChild(datos.provincias[j]);
-          float altura = map(datos.poblacion[j], datos.minPoblacion, datos.maxPoblacion, 10, 500);
+        float altura = map(datos.poblacion[j],datos.minPoblacion, datos.maxPoblacion, 10, 500);
 
           colores[j] = color(56+(altura/500*200), 255, 255);
           fill(colores[j]);

@@ -20,10 +20,6 @@ import processing.opengl.PGL;
 import processing.opengl.PGraphics3D;
 import processing.opengl.PJOGL;
 
-//Arreglar letra de la interfaz
-//Definir proporciones del tamaño de la interfaz
-//Modo dos mapas
-
 Datos datos;
 Mapa[] mapas = new Mapa[2];
 
@@ -42,14 +38,12 @@ boolean proyec= true;
 boolean record = false;
 
 void settings() {
-  fullScreen(P3D);
-  //size(1280, 720, P3D); // 3D
+  fullScreen(P3D, 2);
   PJOGL.setIcon("C3D.png");
   smooth();
 }
 
 void setup() {
-  surface.setResizable(true);
   camaraInterfaz();
   instanciarDatos();
   instanciarFuente();
@@ -127,9 +121,6 @@ void instanciarMapas() {
       if (mapas[i] == mapas[1]) {
         mapas[1].cambiarDatos(ruta);
       }
-      else {
-        mapas[i].poblacion = datos.poblacion;
-      }
     } else {
       mapas[i].setCam(i * (separacion+width/2), 0, (width / cantMapas - (separacion * (i))), height);
       //mapas[i].renovarDatos();
@@ -164,24 +155,6 @@ void desactivarCamara() {
       mapas[i].cam.setActive(true);
     }
   }
-  if (cantMapas == 2) {
-    if (mouseX <= mapas[0].dimensionCamX) {
-      mapas[1].cam.setActive(false);
-      mapas[0].cam.setActive(true);
-      //println("cam1 activa");
-    }
-    else {
-      mapas[1].cam.setActive(true);
-      mapas[0].cam.setActive(false);
-      //println("cam2 activa");
-    }
-  }
-  /*
-  else if (cantMapas == 1 && !mapas[0].cam.isActive()) {
-    mapas[0].cam.setActive(true);
-    //println("cam1 activa");
-  }
-  */
 }
 
 void setGLGraphicsViewport(int x, int y, int w, int h) {
